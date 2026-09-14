@@ -1,0 +1,53 @@
+@startuml
+skinparam componentStyle uml2
+
+package "Level 1: Physical Asset & Connection" {
+    [Viessmann Vitorond Boiler] as Boiler
+    [Waterwall & Convection Tubes] as Tubes
+    [Burner & Combustion Chamber] as Burner
+    [Industrial Sensors (T, P, Flow, O2)] as Sensors
+    Boiler *-- Tubes
+    Boiler *-- Burner
+    Sensors ..> Boiler : Ingest Telemetry
+}
+
+package "Level 2: Data Preprocessing & Conversion" {
+    [Telemetry Buffer & Preprocessor] as Preprocessor
+    [Thermodynamic Property Evaluator] as ThermoProps
+    Sensors --> Preprocessor : Raw Streams
+    Preprocessor --> ThermoProps : Scaled Features
+}
+
+package "Level 3: Cyber Layer (Digital Twin & PINN)" {
+    [Digital Twin State Synchronizer] as TwinSync
+    [Pure PyTorch PINN Model] as PINN
+    [1st Law Thermodynamics Engine] as ThermoEngine
+    
+    ThermoProps --> TwinSync
+    TwinSync <--> PINN : Forward State & Inverse Parameter Estimation
+    TwinSync <--> ThermoEngine : Energy Conservation Residuals
+}
+
+package "Level 4: Cognition & Prognostics" {
+    [Health Index Calculator] as HIEngine
+    [Remaining Safe Operating Window (RSOW)] as RSOWEngine
+    [ISA-18.2 Root-Cause Isolation] as AnomalyDetector
+    
+    TwinSync --> HIEngine
+    TwinSync --> RSOWEngine
+    TwinSync --> AnomalyDetector
+}
+
+package "Level 5: Configuration & Work System Execution" {
+    [What-If Scenario Sandbox] as WhatIf
+    [Opportunistic Maintenance Scheduler] as Scheduler
+    [Industrial Work Order Generator] as WorkOrderGen
+    [Streamlit Control Cockpit (HMI)] as Cockpit
+    
+    HIEngine --> Cockpit
+    AnomalyDetector --> Cockpit
+    RSOWEngine --> Scheduler
+    Scheduler --> WorkOrderGen : Output WO
+    WhatIf --> Cockpit : Simulation Trajectories
+}
+@enduml

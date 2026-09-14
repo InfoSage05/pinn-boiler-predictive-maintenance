@@ -1,0 +1,43 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+
+actor "Control Room Operator" as Operator
+actor "Maintenance Technician" as Tech
+actor "Plant Operations Manager" as Manager
+actor "Reliability Engineer" as Engineer
+
+rectangle "Physics-Informed Digital Twin Work System" {
+  usecase "UC-01: Monitor Live Boiler Telemetry" as UC1
+  usecase "UC-02: Inspect Virtual Twin State & Residuals" as UC2
+  usecase "UC-03: Evaluate Health Index & RSOW" as UC3
+  usecase "UC-04: Triage Root-Cause Alarms" as UC4
+  usecase "UC-05: Simulate 'What-If' Operational Scenarios" as UC5
+  usecase "UC-06: Optimize Maintenance Shift Schedule" as UC6
+  usecase "UC-07: Issue Soot-Blowing Work Order" as UC7
+  usecase "UC-08: Execute LOTO Safety Tagout" as UC8
+  usecase "UC-09: Validate PINN Thermodynamic Residuals" as UC9
+}
+
+Operator --> UC1
+Operator --> UC2
+Operator --> UC3
+Operator --> UC4
+Operator --> UC5
+
+Manager --> UC5
+Manager --> UC6
+Manager --> UC7
+
+Tech --> UC7
+Tech --> UC8
+
+Engineer --> UC2
+Engineer --> UC9
+Engineer --> UC6
+
+UC4 ..> UC3 : <<include>>
+UC6 ..> UC7 : <<include>>
+UC7 ..> UC8 : <<requires>>
+@enduml

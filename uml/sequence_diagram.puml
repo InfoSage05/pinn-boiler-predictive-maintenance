@@ -1,0 +1,48 @@
+@startuml
+autonumber
+skinparam responseMessageBelowArrow true
+
+actor "Control Operator" as Op
+participant "Boiler Sensors\n& Historian" as Sensors
+participant "Digital Twin\nSynchronizer" as Twin
+participant "PyTorch PINN\nEngine" as PINN
+participant "Thermodynamics\nPhysics Model" as Thermo
+participant "Prognostics &\nAlarm Engine" as Prognostics
+participant "Opportunistic\nScheduler" as Scheduler
+actor "Maintenance\nTechnician" as Tech
+
+Sensors -> Twin: Stream telemetry frame (T, P, Water Mdot, Fuel Flow, O2)
+activate Twin
+
+Twin -> PINN: Evaluate state & latent degradation [m_f, T_in, m_w, T_air]
+activate PINN
+PINN -> PINN: Forward pass & autograd grad evaluation
+PINN --> Twin: Return T_pred & estimated Fouling Rf
+deactivate PINN
+
+Twin -> Thermo: Calculate 1st Law Energy Imbalance
+activate Thermo
+Thermo --> Twin: Return Physics Residual (kW)
+deactivate Thermo
+
+Twin -> Prognostics: Evaluate Health Index (HI) & Alarm Priority
+activate Prognostics
+Prognostics --> Twin: Return Status (NORMAL / WARNING / CRITICAL) & RSOW
+deactivate Prognostics
+
+Twin -> Op: Display Digital Twin Cockpit & Root-Cause Card
+
+alt Health Index < Threshold (Degradation Detected)
+    Op -> Scheduler: Request Cost-Optimal Maintenance Window
+    activate Scheduler
+    Scheduler -> Scheduler: Evaluate upcoming shifts, fuel waste, & failure risk
+    Scheduler --> Op: Present Optimal Off-Peak Window & Cost Comparison
+    Op -> Scheduler: Approve Maintenance Slot
+    Scheduler -> Tech: Dispatch Work Order Ticket with LOTO Protocol
+    deactivate Scheduler
+    Tech -> Tech: Execute high-pressure soot blowing
+    Tech --> Twin: Report maintenance completed (Rf reset to baseline)
+end
+
+deactivate Twin
+@enduml

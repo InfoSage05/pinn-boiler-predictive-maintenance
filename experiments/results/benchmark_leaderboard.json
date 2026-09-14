@@ -1,0 +1,50 @@
+{
+  "Model 0: Physics-Only (Zero-Data)": {
+    "RMSE": 7.369112262968121,
+    "MAE": 5.509576978077879,
+    "R2": -0.6110157422444824,
+    "Physics_Residual_kW": 4.520214741415101e-13,
+    "Latency_ms": 0.0078,
+    "Trainable_Params": 0
+  },
+  "Model 1: Polynomial Ridge": {
+    "RMSE": 4.2176346985783715,
+    "MAE": 3.4590223170881855,
+    "R2": 0.4722753727190482,
+    "Physics_Residual_kW": 143.6177628325907,
+    "Latency_ms": 0.0008,
+    "Trainable_Params": 15
+  },
+  "Model 2: Random Forest": {
+    "RMSE": 4.558044649692201,
+    "MAE": 3.641264076434989,
+    "R2": 0.38365115141748607,
+    "Physics_Residual_kW": 142.20994526149477,
+    "Latency_ms": 0.0204,
+    "Trainable_Params": 125000
+  },
+  "Model 3: Standard Deep MLP (Data-Only)": {
+    "RMSE": 4.233009743369351,
+    "MAE": 3.4494645905345975,
+    "R2": 0.468420805197891,
+    "Physics_Residual_kW": 134.47493177825365,
+    "Latency_ms": 0.0029,
+    "Trainable_Params": 8705
+  },
+  "Model 4: Recurrent LSTM": {
+    "RMSE": 4.204478014980014,
+    "MAE": 3.4602167596766478,
+    "R2": 0.47556265439309653,
+    "Physics_Residual_kW": 142.66390112327088,
+    "Latency_ms": 0.0097,
+    "Trainable_Params": 29233
+  },
+  "Model 5: Physics-Informed Neural Network (PINN)": {
+    "RMSE": 5.255313617253056,
+    "MAE": 4.0438093255952525,
+    "R2": 0.18065517483579663,
+    "Physics_Residual_kW": 44.46318054199219,
+    "Latency_ms": 0.0029,
+    "Trainable_Params": 12866
+  }
+}

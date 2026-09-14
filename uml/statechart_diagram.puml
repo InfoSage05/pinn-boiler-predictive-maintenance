@@ -1,0 +1,54 @@
+@startuml
+[*] --> Operational_Nominal
+
+state Operational_Nominal {
+    Operational_Nominal : Health Index >= 0.75
+    Operational_Nominal : Fouling Rf < 0.022
+    Operational_Nominal : Status = NORMAL
+}
+
+Operational_Nominal --> Degrading_Advisory : Fouling Rf >= 0.022 or Residual > 20 kW
+
+state Degrading_Advisory {
+    Degrading_Advisory : Health Index: 0.50 to 0.75
+    Degrading_Advisory : Status = ADVISORY
+    Degrading_Advisory : Action = Plan opportunistic maintenance
+}
+
+Degrading_Advisory --> Operational_Nominal : Early Soot Blowing Executed
+
+Degrading_Advisory --> Thermal_Stress_Warning : Fouling Rf >= 0.035 or Tube Temp > 548°C
+
+state Thermal_Stress_Warning {
+    Thermal_Stress_Warning : Health Index: 0.30 to 0.50
+    Thermal_Stress_Warning : Status = WARNING
+    Thermal_Stress_Warning : Action = Dispatch maintenance within 24-48h
+}
+
+Thermal_Stress_Warning --> Critical_Creep_Hazard : Tube Temp >= 560°C or HI < 0.30
+
+state Critical_Creep_Hazard {
+    Critical_Creep_Hazard : Tube Creep Rupture Imminent
+    Critical_Creep_Hazard : Status = CRITICAL
+    Critical_Creep_Hazard : Action = Emergency Load Derate / Outage
+}
+
+Thermal_Stress_Warning --> Planned_Soot_Blowing : Scheduled Off-Peak Shift Reached
+Critical_Creep_Hazard --> Emergency_Shutdown : Automatic Safety Interlock Trip
+
+state Planned_Soot_Blowing {
+    Planned_Soot_Blowing : LOTO Protocol Active
+    Planned_Soot_Blowing : High-Pressure Lance Wash
+    Planned_Soot_Blowing : Duration = 3.5 hours
+}
+
+state Emergency_Shutdown {
+    Emergency_Shutdown : Burner Trips / Lockout
+    Emergency_Shutdown : Rapid Refractory Cooling Hazard
+    Emergency_Shutdown : Emergency Crew Mobilization
+}
+
+Planned_Soot_Blowing --> Operational_Nominal : Verification Passed / Clean U Restored
+Emergency_Shutdown --> Operational_Nominal : Tube Repairs & Pressure Re-certification
+
+@enduml
