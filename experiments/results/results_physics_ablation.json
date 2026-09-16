@@ -1,0 +1,44 @@
+[
+  {
+    "lambda_phys": 0.0,
+    "RMSE": 4.205,
+    "MAE": 3.462,
+    "R2": 0.4755,
+    "Physics_Residual_kW": 138.76
+  },
+  {
+    "lambda_phys": 0.01,
+    "RMSE": 4.239,
+    "MAE": 3.447,
+    "R2": 0.4669,
+    "Physics_Residual_kW": 121.15
+  },
+  {
+    "lambda_phys": 0.05,
+    "RMSE": 4.522,
+    "MAE": 3.574,
+    "R2": 0.3933,
+    "Physics_Residual_kW": 84.85
+  },
+  {
+    "lambda_phys": 0.15,
+    "RMSE": 5.07,
+    "MAE": 3.921,
+    "R2": 0.2376,
+    "Physics_Residual_kW": 52.34
+  },
+  {
+    "lambda_phys": 0.5,
+    "RMSE": 5.878,
+    "MAE": 4.456,
+    "R2": -0.025,
+    "Physics_Residual_kW": 24.05
+  },
+  {
+    "lambda_phys": 1.0,
+    "RMSE": 6.285,
+    "MAE": 4.732,
+    "R2": -0.1719,
+    "Physics_Residual_kW": 13.86
+  }
+]

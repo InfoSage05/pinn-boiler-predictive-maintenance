@@ -1,0 +1,50 @@
+[
+  {
+    "fraction": 0.01,
+    "train_samples": 179,
+    "RF_RMSE": 4.846497603399072,
+    "MLP_RMSE": 4.787884206136003,
+    "PINN_RMSE": 5.221720294057171,
+    "PINN_Advantage_Pct": -9.06
+  },
+  {
+    "fraction": 0.05,
+    "train_samples": 895,
+    "RF_RMSE": 4.901972426009598,
+    "MLP_RMSE": 4.273095773945486,
+    "PINN_RMSE": 5.28234264296706,
+    "PINN_Advantage_Pct": -23.62
+  },
+  {
+    "fraction": 0.1,
+    "train_samples": 1790,
+    "RF_RMSE": 4.73756909058299,
+    "MLP_RMSE": 4.28456001773743,
+    "PINN_RMSE": 5.288239698624771,
+    "PINN_Advantage_Pct": -23.43
+  },
+  {
+    "fraction": 0.25,
+    "train_samples": 4475,
+    "RF_RMSE": 4.577690663243914,
+    "MLP_RMSE": 4.274788822199327,
+    "PINN_RMSE": 5.2847262068498475,
+    "PINN_Advantage_Pct": -23.63
+  },
+  {
+    "fraction": 0.5,
+    "train_samples": 8951,
+    "RF_RMSE": 4.378007873191906,
+    "MLP_RMSE": 4.20763986304555,
+    "PINN_RMSE": 5.246499591660497,
+    "PINN_Advantage_Pct": -24.69
+  },
+  {
+    "fraction": 1.0,
+    "train_samples": 17902,
+    "RF_RMSE": 4.328435166899606,
+    "MLP_RMSE": 4.199946272772113,
+    "PINN_RMSE": 5.257346692225842,
+    "PINN_Advantage_Pct": -25.18
+  }
+]
