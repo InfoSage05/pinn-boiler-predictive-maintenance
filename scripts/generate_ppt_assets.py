@@ -620,7 +620,7 @@ def generate_work_system_diagram():
     
     ax.text(0.5, 0.96, "STEVEN ALTER'S WORK SYSTEM FRAMEWORK (WSD)",
             color=TEXT_MAIN, fontsize=18, weight='bold', ha='center')
-    ax.text(0.5, 0.92, "Instantiated for IIT Bhilai: Socio-Technical Architecture of the Boiler PINN-DT",
+    ax.text(0.5, 0.92, "Instantiated for IIT Kharagpur: Socio-Technical Architecture of the Boiler PINN-DT",
             color=TEXT_MUTED, fontsize=12, ha='center')
 
     # Environment Banner (Top)
@@ -709,7 +709,7 @@ def generate_work_system_diagram():
         facecolor='#334155', edgecolor='#94A3B8', linewidth=1.2
     )
     ax.add_patch(strat_box)
-    ax.text(0.5, 0.09, "STRATEGIES & INFRASTRUCTURE: IIT Bhilai Work System Design curriculum | ASME Boiler Code | ISA-18.2 Alarm Standard | OSHA 1910.147 LOTO",
+    ax.text(0.5, 0.09, "STRATEGIES & INFRASTRUCTURE: IIT Kharagpur Work System Design curriculum | ASME Boiler Code | ISA-18.2 Alarm Standard | OSHA 1910.147 LOTO",
             color='white', fontsize=10.5, weight='bold', ha='center', va='center')
 
     save_to_all(fig, "06_work_system_framework_pro.png")

@@ -1,7 +1,7 @@
 # Physics-Informed Digital Twin for Predictive Maintenance of Industrial Boilers
 
 > **A Cyber-Physical Work System Design (WSD) Framework for Thermodynamic State Estimation, Degradation Prognosis, and Dynamic Maintenance Scheduling**  
-> *Developed for the Work System Design Course, IIT Bhilai*
+> *Developed for the Work System Design Course, IIT Kharagpur*
 
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
 [![PyTorch 2.0+](https://img.shields.io/badge/PyTorch-2.0%2B-ee4c2c.svg)](https://pytorch.org/)
@@ -13,7 +13,7 @@
 
 ## 1. Executive Summary & Work System Design Philosophy
 
-A common limitation in predictive maintenance projects is treating machine learning as an isolated curve-fitting exercise on tabular data. In a true **Work System Design (WSD)** environment (as taught in Prof. Subhajit's curriculum at IIT Bhilai), computational algorithms are only one subsystem within a socio-technical configuration of **people**, **processes**, **information**, and **physical assets**.
+A common limitation in predictive maintenance projects is treating machine learning as an isolated curve-fitting exercise on tabular data. In a true **Work System Design (WSD)** environment (as taught in Prof. Subhajit's curriculum at IIT Kharagpur), computational algorithms are only one subsystem within a socio-technical configuration of **people**, **processes**, **information**, and **physical assets**.
 
 This repository implements an end-to-end **Physics-Informed Digital Twin (PINN-DT)** for an industrial steam and hot water boiler (Viessmann Vitorond 200 / Industrial Coal-Fired Boiler). The system fuses real-time sensor observations with first-principles thermodynamics (1st Law energy conservation) to:
 1. **Estimate unobservable degradation phenomena** (fireside soot fouling resistance Rf and waterside scaling) in real time.
@@ -230,7 +230,7 @@ python experiments/exp_physics_ablation.py
 
 ## 9. Academic Citations & Acknowledgements
 
-- **Work System Design**: Prof. Subhajit, IIT Bhilai Course Curriculum.
+- **Work System Design**: Prof. Subhajit, IIT Kharagpur Course Curriculum.
 - **Alter, S. (2013)**. *Work System Theory: Overview of Core Concepts, Extensions, and Challenges for the Future*. Journal of the Association for Information Systems.
 - **Lee, J., Bagheri, B., & Kao, H. A. (2015)**. *A Cyber-Physical Systems architecture for Industry 4.0-based manufacturing systems*. Manufacturing Letters.
 - **Raissi, M., Perdikaris, P., & Karniadakis, G. E. (2019)**. *Physics-informed neural networks: A deep learning framework for solving forward and inverse problems involving nonlinear partial differential equations*. Journal of Computational Physics.

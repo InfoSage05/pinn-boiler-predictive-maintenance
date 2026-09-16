@@ -2,7 +2,7 @@
 
 ## 1. Academic & Theoretical Foundation
 
-This project implements a **Physics-Informed Digital Twin (PINN-DT)** within a formal **Work System Design (WSD)** framework, directly aligned with the curriculum of the Work System Design course at IIT Bhilai.
+This project implements a **Physics-Informed Digital Twin (PINN-DT)** within a formal **Work System Design (WSD)** framework, directly aligned with the curriculum of the Work System Design course at IIT Kharagpur.
 
 In classical industrial engineering, predictive models are often developed in an algorithmic vacuum without considering the humans, organizational processes, decision contexts, or operational workflows surrounding the physical asset. In contrast, this project designs the computational intelligence (PyTorch PINN) as an integrated subsystem within a complete socio-technical work system.
 

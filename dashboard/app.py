@@ -1,7 +1,7 @@
 """
 Physics-Informed Digital Twin (PINN-DT) Industrial Control Room Cockpit.
 Work System Design & Predictive Maintenance for Industrial Boilers.
-IIT Bhilai Work System Design Course Project.
+IIT Kharagpur Work System Design Course Project.
 """
 
 import os
