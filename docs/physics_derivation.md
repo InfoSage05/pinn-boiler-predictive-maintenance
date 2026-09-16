@@ -5,32 +5,32 @@
 Consider a control volume enclosing the boiler heat exchange tubes, combustion chamber, and water circulating loop.
 Applying the **First Law of Thermodynamics (Conservation of Energy)** to the unsteady open system:
 
-$$\frac{d E_{cv}}{dt} = \dot{Q}_{combustion}(t) - \dot{W}_{cv} - \dot{Q}_{fluid}(t) - \dot{Q}_{loss}(t)$$
+    dE_cv/dt = Q_combustion - W_cv - Q_fluid - Q_loss    [kW]
 
-In a boiler system, shaft work $\dot{W}_{cv} = 0$. The total stored thermal energy in the control volume is:
+In a boiler system, shaft work `W_cv = 0`. The total stored thermal energy in the control volume is:
 
-$$E_{cv} \approx (m_{metal} c_{p,metal} + m_{water} c_{p,water}) T_{supply}(t) = C_{sys} T_{supply}(t)$$
+    E_cv = (m_metal * cp_metal + m_water * cp_water) * T_supply = C_sys * T_supply
 
-where $C_{sys}$ is the effective lumped thermal heat capacity ($\text{kJ/K}$).
+where `C_sys` is the effective lumped thermal heat capacity [kJ/K].
 Thus, the governing ordinary differential equation (ODE) is:
 
-$$C_{sys} \frac{d T_{supply}(t)}{dt} = \dot{Q}_{combustion}(t) - \dot{Q}_{water}(t) - \dot{Q}_{casing\_loss}(t)$$
+    C_sys * dT_supply/dt = Q_combustion - Q_water - Q_casing_loss    [kW]
 
 ### 1.1 Combustion Heat Release
 The heat release rate from burner firing is:
 
-$$\dot{Q}_{combustion}(t) = \dot{m}_{fuel}(t) \cdot LHV \cdot \eta_{comb}(\lambda)$$
+    Q_combustion(t) = m_dot_fuel(t) * LHV * eta_comb(lambda)
 
 where:
-- $\dot{m}_{fuel}$ is fuel firing mass flow rate ($\text{kg/s}$).
-- $LHV$ is the Lower Heating Value ($\approx 42{,}000\text{ kJ/kg}$).
-- $\eta_{comb}(\lambda)$ is combustion efficiency dependent on the excess air equivalence ratio $\lambda$.
+- `m_dot_fuel` is fuel firing mass flow rate [kg/s].
+- `LHV` is the Lower Heating Value (approx 42,000 kJ/kg).
+- `eta_comb(lambda)` is combustion efficiency dependent on the excess air equivalence ratio lambda.
 
 ### 1.2 Sensible Water Heat Absorption
-$$\dot{Q}_{water}(t) = \dot{m}_{water}(t) \cdot c_p \cdot [T_{supply}(t) - T_{return}(t)]$$
+    Q_water(t) = m_dot_water(t) * cp * [T_supply(t) - T_return(t)]
 
 ### 1.3 Casing and Ambient Losses
-$$\dot{Q}_{casing\_loss}(t) = U_{loss} A_{shell} [T_{supply}(t) - T_{ambient}]$$
+    Q_casing_loss(t) = U_loss * A_shell * [T_supply(t) - T_ambient]
 
 ---
 
@@ -38,45 +38,45 @@ $$\dot{Q}_{casing\_loss}(t) = U_{loss} A_{shell} [T_{supply}(t) - T_{ambient}]$$
 
 Heat transfer from flue gas through the tube wall to water is governed by overall thermal resistance:
 
-$$R_{total}(t) = \frac{1}{U(t) A} = \frac{1}{h_{gas} A_o} + \frac{R_{fouling}(t)}{A_o} + \frac{\ln(r_o/r_i)}{2\pi k_{metal} L} + \frac{R_{scaling}(t)}{A_i} + \frac{1}{h_{water} A_i}$$
+    R_total(t) = 1/(U(t)*A) = 1/(h_gas*A_o) + R_fouling(t)/A_o + ln(r_o/r_i)/(2*pi*k_metal*L) + R_scaling(t)/A_i + 1/(h_water*A_i)
 
 Under clean baseline conditions:
 
-$$\frac{1}{U_{clean}} = \frac{1}{h_{gas}} + \frac{\delta_{metal}}{k_{metal}} + \frac{1}{h_{water}}$$
+    1/U_clean = 1/h_gas + delta_metal/k_metal + 1/h_water
 
-When soot and slag deposit on the external tube surfaces, an additional conduction resistance $R_{fouling}(t)$ appears:
+When soot and slag deposit on the external tube surfaces, an additional conduction resistance R_fouling(t) appears:
 
-$$\frac{1}{U(t)} = \frac{1}{U_{clean}} + R_{fouling}(t)$$
+    1/U(t) = 1/U_clean + R_fouling(t)
 
 ### Kern-Seaton Asymptotic Deposition-Removal Model
 Fouling kinetics balance soot particle deposition from the flue gas against shear re-entrainment:
 
-$$\frac{d R_f}{dt} = \dot{m}_{deposition} - \beta \tau_{shear} R_f(t)$$
+    dRf/dt = m_dot_deposition - beta * tau_shear * Rf(t)
 
 Under steady operational firing:
 
-$$R_f(t) = R_{clean} + (R_{asymptotic} - R_{clean}) \cdot \left[1 - \exp\left(-\frac{t}{\tau_{foul}}\right)\right]$$
+    Rf(t) = R_clean + (R_asymptotic - R_clean) * [1 - exp(-t / tau_foul)]
 
 ---
 
 ## 3. Pure PyTorch PINN Autograd Formulation
 
-The neural network $\mathcal{N}_\theta$ maps operational inputs to the predicted supply temperature and latent fouling resistance:
+The neural network N_theta maps operational inputs to the predicted supply temperature and latent fouling resistance:
 
-$$[\hat{T}_{supply}, \hat{R}_f] = \mathcal{N}_\theta(\dot{m}_{fuel}, T_{air}, T_{return}, \dot{m}_{water}, t)$$
+    [T_supply_hat, Rf_hat] = N_theta(m_dot_fuel, T_air, T_return, m_dot_water, t)
 
 ### 3.1 Automatic Differentiation Physics Residual
 PyTorch's automatic differentiation engine (`torch.autograd.grad`) evaluates the input-output gradient:
 
-$$\nabla_{\mathbf{x}} \hat{T}_{supply} = \frac{\partial \hat{T}_{supply}}{\partial \mathbf{x}}$$
+    grad_x T_supply_hat = dT_supply_hat / dx
 
 The energy conservation loss enforces zero physical discrepancy:
 
-$$\mathcal{L}_{physics} = \frac{1}{M} \sum_{j=1}^M \left( \dot{m}_{w} c_p (\hat{T}_{supply} - T_{return}) - \left[\frac{1}{\frac{1}{\dot{Q}_{clean}} + \gamma \hat{R}_f}\right] \right)^2$$
+    L_physics = (1/M) * sum( m_dot_w * cp * (T_supply_hat - T_return) - [ 1 / (1/Q_clean + gamma*Rf_hat) ] )^2
 
 ### 3.2 Monotonicity Constraint Prior
 Because fouling accumulates monotonically during operating shifts:
 
-$$\mathcal{L}_{monotonicity} = \frac{1}{M} \sum_{j=1}^M \text{ReLU}\left( \frac{\partial \hat{T}_{supply}}{\partial \dot{m}_{water}} \right) + \text{ReLU}\left( - \frac{\partial \hat{R}_f}{\partial t} \right)$$
+    L_monotonicity = (1/M) * sum( ReLU(dT_supply_hat / dm_dot_water) + ReLU(-dRf_hat / dt) )
 
 This penalizes non-physical positive derivatives with respect to water flow rate and non-physical negative degradation trajectories.

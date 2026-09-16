@@ -16,7 +16,7 @@
 A common limitation in predictive maintenance projects is treating machine learning as an isolated curve-fitting exercise on tabular data. In a true **Work System Design (WSD)** environment (as taught in Prof. Subhajit's curriculum at IIT Bhilai), computational algorithms are only one subsystem within a socio-technical configuration of **people**, **processes**, **information**, and **physical assets**.
 
 This repository implements an end-to-end **Physics-Informed Digital Twin (PINN-DT)** for an industrial steam and hot water boiler (Viessmann Vitorond 200 / Industrial Coal-Fired Boiler). The system fuses real-time sensor observations with first-principles thermodynamics (1st Law energy conservation) to:
-1. **Estimate unobservable degradation phenomena** (fireside soot fouling resistance $R_f$ and waterside scaling) in real time.
+1. **Estimate unobservable degradation phenomena** (fireside soot fouling resistance Rf and waterside scaling) in real time.
 2. **Predict future thermal trajectories** while strictly respecting conservation laws via automatic differentiation (`torch.autograd.grad`).
 3. **Mitigate operator alarm fatigue** through ISA-18.2 compliant root-cause explainability rather than opaque black-box thresholds.
 4. **Optimize opportunistic maintenance scheduling** by balancing cumulative fuel waste costs against shift-dependent downtime losses and tube creep rupture risks.
@@ -60,10 +60,10 @@ The project architecture maps directly to Jay Lee's CPS 5C framework:
 
 | Level | Name | Role in this Boiler System |
 | :--- | :--- | :--- |
-| **C1** | **Connection** | Telemetry ingestion from temperature, pressure, water mass flow, fuel firing rate, and flue gas $O_2$ transmitters. |
+| **C1** | **Connection** | Telemetry ingestion from temperature, pressure, water mass flow, fuel firing rate, and flue gas O2 transmitters. |
 | **C2** | **Conversion** | Feature normalization, sensor health verification, and thermodynamic property lookup (enthalpy, density, heat capacity). |
 | **C3** | **Cyber** | Virtual Digital Twin state model holding physical geometry, parameters, and the pure PyTorch PINN dual-head engine. |
-| **C4** | **Cognition** | Composite Health Index ($HI \in [0, 1]$), Remaining Safe Operating Window ($RSOW$), and ISA-18.2 root-cause diagnostic cards. |
+| **C4** | **Cognition** | Composite Health Index (HI in [0, 1]), Remaining Safe Operating Window (RSOW), and ISA-18.2 root-cause diagnostic cards. |
 | **C5** | **Configuration** | Dynamic opportunistic shift scheduler, automated work order generation (crew, LOTO protocol), and What-If scenario sandbox. |
 
 ---
@@ -73,35 +73,35 @@ The project architecture maps directly to Jay Lee's CPS 5C framework:
 ### 3.1 First-Principles Energy Balance (1st Law of Thermodynamics)
 The transient thermal behavior of the boiler working fluid is governed by:
 
-$$C_{sys} \frac{d T_{supply}(t)}{dt} = \dot{Q}_{combustion}(t) - \dot{Q}_{water}(t) - \dot{Q}_{casing\_loss}(t)$$
+    C_sys * dT_supply/dt = Q_combustion - Q_water - Q_casing_loss    [kW]
 
 Where:
-- $\dot{Q}_{combustion} = \dot{m}_{fuel} \cdot LHV \cdot \eta_{comb}(\lambda)$ is chemical heat release ($\text{kW}$).
-- $\dot{Q}_{water} = \dot{m}_{water} c_p (T_{supply} - T_{return})$ is sensible heat absorbed by the working fluid ($\text{kW}$).
-- $\dot{Q}_{casing\_loss} = U_{loss} A_{shell} (T_{supply} - T_{ambient})$ is convective/radiative casing loss ($\text{kW}$).
+- `Q_combustion = m_dot_fuel * LHV * eta_comb(lambda)` is chemical heat release [kW].
+- `Q_water = m_dot_water * cp * (T_supply - T_return)` is sensible heat absorbed by the working fluid [kW].
+- `Q_casing_loss = U_loss * A_shell * (T_supply - T_ambient)` is convective/radiative casing loss [kW].
 
 ### 3.2 Thermal Resistance & Fouling Mechanics
-Fireside soot and slag deposition on heat exchange tubes introduces a conductive fouling resistance $R_f(t)$:
+Fireside soot and slag deposition on heat exchange tubes introduces a conductive fouling resistance Rf(t):
 
-$$\frac{1}{U(t)} = \frac{1}{U_{clean}} + R_{fouling}(t)$$
+    1/U(t) = 1/U_clean + R_fouling(t)
 
-$$\frac{1}{\dot{Q}_{water}} = \frac{1}{\dot{Q}_{clean}} + \gamma \cdot R_f(t)$$
+    1/Q_water = 1/Q_clean + gamma * Rf(t)
 
-As $R_f(t)$ increases, heat absorption drops, forcing higher fuel firing, elevating stack temperatures, and increasing tube metal temperatures toward metallurgical creep limits ($>560^\circ\text{C}$).
+As `Rf(t)` increases, heat absorption drops, forcing higher fuel firing, elevating stack temperatures, and increasing tube metal temperatures toward metallurgical creep limits (> 560 C).
 
 ### 3.3 Pure PyTorch PINN Loss with Autograd
-The neural network outputs both the predicted temperature $\hat{T}_{supply}$ and the latent fouling resistance $\hat{R}_f$:
+The neural network outputs both the predicted temperature `T_supply_hat` and the latent fouling resistance `Rf_hat`:
 
-$$[\hat{T}_{supply}, \hat{R}_f] = \mathcal{N}_\theta(\dot{m}_{fuel}, T_{air}, T_{return}, \dot{m}_{water}, t)$$
+    [T_supply_hat, Rf_hat] = N_theta(m_dot_fuel, T_air, T_return, m_dot_water, t)
 
 Using `torch.autograd.grad`, the model computes input derivatives and minimizes the composite loss:
 
-$$\mathcal{L}_{total} = \lambda_{data}\mathcal{L}_{data} + \lambda_{phys}\mathcal{L}_{physics} + \lambda_{mono}\mathcal{L}_{monotonicity} + \lambda_{bound}\mathcal{L}_{boundary} + \lambda_{inv}\mathcal{L}_{inverse}$$
+    L_total = lambda_data*L_data + lambda_phys*L_physics + lambda_mono*L_mono + lambda_bound*L_boundary + lambda_inv*L_inverse
 
 - **Physics Energy Residual Loss**:
-  $$\mathcal{L}_{physics} = \frac{1}{M} \sum_{j=1}^M \left( \dot{m}_{water} c_p (\hat{T}_{supply} - T_{return}) - \left[\frac{1}{\frac{1}{\dot{Q}_{clean}} + \gamma \hat{R}_f}\right] \right)^2$$
+  `L_physics = (1/M) * sum( m_dot_water * cp * (T_supply_hat - T_return) - [ 1 / (1/Q_clean + gamma*Rf_hat) ] )^2`
 - **Monotonicity Prior**:
-  $$\mathcal{L}_{mono} = \frac{1}{M}\sum_{j=1}^M \text{ReLU}\left( \frac{\partial \hat{T}_{supply}}{\partial \dot{m}_{water}} \right) + \text{ReLU}\left( - \frac{\partial \hat{R}_f}{\partial t} \right)$$
+  `L_mono = (1/M) * sum( ReLU(dT_supply_hat / dm_dot_water) + ReLU(-dRf_hat / dt) )`
 
 ---
 
@@ -110,10 +110,10 @@ $$\mathcal{L}_{total} = \lambda_{data}\mathcal{L}_{data} + \lambda_{phys}\mathca
 1. **Dataset 1: Viessmann Vitorond 200 Boiler Dataset (27,280 samples)**:
    - Primary ground-truth benchmark (HySonLab/AgentIoT).
    - Features: `Fuel_Mdot`, `Tair`, `Treturn`, `Tsupply`, `Water_Mdot`, `Condition`, `Class`.
-   - Continuous numerical degradation labels: $F \in [0.01, 0.46]$ (Fouling), $S \in [0.01, 0.46]$ (Scaling), Nominal, Lean, and Excess Air.
+   - Continuous numerical degradation labels: F in [0.01, 0.46] (Fouling), S in [0.01, 0.46] (Scaling), Nominal, Lean, and Excess Air.
    - Used for rigorous quantitative validation of PINN inverse parameter identification.
 2. **Dataset 2: Real Industrial Coal-Fired Boiler Operations Telemetry (14,400 samples)**:
-   - High-resolution 5-second sampling telemetry capturing superheated steam temperature (`TE_8332A`), drum pressure, flue gas $O_2$, and draft fan currents.
+   - High-resolution 5-second sampling telemetry capturing superheated steam temperature (`TE_8332A`), drum pressure, flue gas O2, and draft fan currents.
    - Demonstrates Digital Twin state synchronization under realistic industrial noise and disturbance shifts.
 
 ---
@@ -121,7 +121,7 @@ $$\mathcal{L}_{total} = \lambda_{data}\mathcal{L}_{data} + \lambda_{phys}\mathca
 ## 5. Experimental Benchmark Ladder & Stress Tests
 
 ### 6-Model Comparative Benchmark
-| Model | Type | Train Data | Test RMSE (K) | Test MAE (K) | Test $R^2$ | Energy Residual (kW) | Latency (ms) |
+| Model | Type | Train Data | Test RMSE (K) | Test MAE (K) | Test R2 | Energy Residual (kW) | Latency (ms) |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Model 0** | Physics-Only Analytical (1st Law) | 0 samples | 7.37 K | 5.51 K | -0.611 | **0.000 kW** | 0.0078 ms |
 | **Model 1** | Polynomial Ridge Regression | 17,902 | 4.22 K | 3.46 K | 0.472 | 143.62 kW | 0.0008 ms |
@@ -132,9 +132,9 @@ $$\mathcal{L}_{total} = \lambda_{data}\mathcal{L}_{data} + \lambda_{phys}\mathca
 
 ### Stress Test Experiments
 1. **Data Scarcity Ablation**: Evaluating on 1%, 5%, 10%, 25%, 50%, 100% of data. PINN retains high physical consistency even with only 1% training data.
-2. **Out-of-Distribution (OOD) Extrapolation**: Testing models on extreme peak loads ($\dot{m}_{fuel} \ge 3.5\text{ kg/s}, \dot{m}_{water} \ge 10.5\text{ kg/s}$). Pure ML produces unphysical predictions, while PINN remains bounded.
+2. **Out-of-Distribution (OOD) Extrapolation**: Testing models on extreme peak loads (m_dot_fuel >= 3.5 kg/s, m_dot_water >= 10.5 kg/s). Pure ML produces unphysical predictions, while PINN remains bounded.
 3. **Sensor Noise Robustness**: Contaminating sensor inputs with 0% to 20% Gaussian noise. Physics regularization acts as a denoising regularizer.
-4. **Physics Loss Weight Sensitivity**: Sweeping $\lambda_{phys} \in [0.0, 1.0]$.
+4. **Physics Loss Weight Sensitivity**: Sweeping lambda_phys in [0.0, 1.0].
 
 ---
 
@@ -148,7 +148,7 @@ streamlit run dashboard/app.py
 
 ### Cockpit Capabilities:
 - **Tab 1: Digital Twin Live Cockpit**: Real-time telemetry, 1st Law Sankey energy balance, live Health Index gauge, and ISA-18.2 alarm banner.
-- **Tab 2: Prognostics & RSOW**: Degradation trajectory tracking soot build-up toward the critical $R_f = 0.035$ threshold, with remaining hours countdown.
+- **Tab 2: Prognostics & RSOW**: Degradation trajectory tracking soot build-up toward the critical Rf = 0.035 threshold, with remaining hours countdown.
 - **Tab 3: PINN & Physics Residual Inspector**: Live autograd loss curves, energy conservation residual check, and 6-model leaderboard.
 - **Tab 4: 'What-If' Scenario Studio**: Interactive sliders for load (50%–100%) and soot-blowing intervention timing, simulating future tube temperatures and fuel waste.
 - **Tab 5: Maintenance Scheduler & Work Orders**: Cost-optimal shift scheduling (off-peak night window selection) and automated industrial Work Order generation with Lockout/Tagout (LOTO) protocols.

@@ -20,26 +20,26 @@ In industrial boiler operations, tube rupture is the single most costly unplanne
 ## 2. Opportunistic Maintenance Optimization Formulation
 
 Condition-Based Maintenance (CBM) is combined with **Opportunistic Scheduling**:
-Given the predicted Remaining Safe Operating Window ($RSOW$), maintenance should be scheduled at an intervention time $\tau^* \in [0, RSOW]$ that minimizes the total expected cost function:
+Given the predicted Remaining Safe Operating Window (RSOW), maintenance should be scheduled at an intervention time tau* in [0, RSOW] that minimizes the total expected cost function:
 
-$$\min_{\tau} J(\tau) = C_{fuel\_waste}(\tau) + C_{intervention}(\text{shift}_\tau) + C_{failure\_risk}(\tau)$$
+    min_tau J(tau) = C_fuel_waste(tau) + C_intervention(shift_tau) + C_failure_risk(tau)
 
 ### 2.1 Cumulative Fuel Inefficiency Waste
 As soot deposits build up on waterwall tubes, thermal transfer efficiency degrades, forcing the boiler to burn excess fuel:
 
-$$C_{fuel\_waste}(\tau) = \int_0^\tau \dot{m}_{excess\_fuel}(R_f(t)) \cdot \text{Price}_{fuel} \, dt$$
+    C_fuel_waste(tau) = integral_0^tau [ m_dot_excess_fuel(Rf(t)) * Price_fuel ] dt
 
 ### 2.2 Shift-Dependent Production Downtime Penalty
 Shutting down a boiler during a peak daytime production shift incurs massive factory downtime losses, whereas shutting down during a scheduled off-peak night shift or planned weekend outage reduces production disruption by up to 75%:
 
-$$C_{intervention}(\text{shift}_\tau) = C_{routine\_cleaning} + t_{duration} \cdot (C_{labor} \cdot M_{shift} + C_{production\_loss}(\text{shift}_\tau))$$
+    C_intervention(shift_tau) = C_routine_cleaning + t_duration * (C_labor * M_shift + C_production_loss(shift_tau))
 
 ### 2.3 Failure Probability & Risk Penalty
 The probability of localized tube metal overheating and creep rupture increases as the intervention is delayed:
 
-$$C_{failure\_risk}(\tau) = P_{rupture}(\tau) \cdot C_{unplanned\_outage}$$
+    C_failure_risk(tau) = P_rupture(tau) * C_unplanned_outage
 
-where $P_{rupture}(\tau)$ is derived from the Larson-Miller parameter for tube metal creep at temperature $T_{metal}(t)$.
+where `P_rupture(tau)` is derived from the Larson-Miller parameter for tube metal creep at temperature T_metal(t).
 
 ---
 
@@ -49,5 +49,5 @@ In modern industrial control rooms, operators are subjected to "alarm flooding" 
 
 ### Cognitive Ergonomics Principles Implemented:
 1. **Single Root-Cause Diagnostic Cards**: The Digital Twin synthesizes multiple raw process spikes into a single, physics-grounded diagnostic card with clear root-cause isolation (Fireside Soot vs. Waterside Scale vs. Excess Air).
-2. **Predictive Horizon vs. Reactive Scrambling**: Provides a clear countdown to critical limits ($RSOW$), transitioning the operator from stressful reactive firefighting to structured proactive planning.
+2. **Predictive Horizon vs. Reactive Scrambling**: Provides a clear countdown to critical limits (RSOW), transitioning the operator from stressful reactive firefighting to structured proactive planning.
 3. **Automated Work Package Assembly**: Generates pre-populated Work Orders with assigned crews, required spare parts, and Lockout/Tagout (LOTO) safety checklists, eliminating administrative cognitive overhead.
