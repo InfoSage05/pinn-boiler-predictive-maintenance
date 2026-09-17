@@ -1,0 +1,10 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+streamlit==1.37.1
+torch==2.3.1+cpu
+numpy==1.26.4
+pandas==2.2.2
+plotly==5.22.0
+scipy==1.13.1
+scikit-learn==1.5.1
+protobuf==4.25.3
