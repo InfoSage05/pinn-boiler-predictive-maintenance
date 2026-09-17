@@ -1,3 +1,14 @@
+---
+title: Boiler PINN Digital Twin
+emoji: 🔥
+colorFrom: blue
+colorTo: red
+sdk: streamlit
+sdk_version: 1.37.1
+app_file: dashboard/app.py
+pinned: false
+---
+
 # Physics-Informed Digital Twin for Predictive Maintenance of Industrial Boilers
 
 > **A Cyber-Physical Work System Design (WSD) Framework for Thermodynamic State Estimation, Degradation Prognosis, and Dynamic Maintenance Scheduling**  
